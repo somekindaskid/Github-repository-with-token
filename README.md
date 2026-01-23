@@ -64,3 +64,7 @@ If your token is leaked, anyone can use it depending on the permissions it has.
 ## 📌 Notes
 
 This project is mainly for learning/testing how the GitHub API works using a front-end only HTML project.
+
+If there are any features you guys want, open a pull request.
+
+YES css is made by chatgpt, this took 3 mins to code, might add proxy support or write it in python for college.
