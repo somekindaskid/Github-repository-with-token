@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Starry GitHub File Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    li {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    strong {
+      color: #00bfff;
+    }
+
+    pre {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Star animations */
+    .stars, .stars2, .stars3 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      background: transparent url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/img/stars.png') repeat top center;
+      animation: moveStars 200s linear infinite;
+    }
+
+    .stars2 {
+      background: transparent url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/img/stars2.png') repeat top center;
+      animation: moveStars 300s linear infinite;
+    }
+
+    .stars3 {
+      background: transparent url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/img/stars3.png') repeat top center;
+      animation: moveStars 400s linear infinite;
+    }
+
+    @keyframes moveStars {
+      from { background-position: 0 0; }
+      to { background-position: 10000px 5000px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="stars2"></div>
+  <div class="stars3"></div>
+
+  <h1>🌌 Quirifys skid ass cheats</h1>
+  <ul id="content-list"></ul>
+
+  <script>
+    const url = "https://api.github.com/repos/Quirify1/rftvzbghij/contents/";
+    const token = "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";
+
+    async function fetchRepoContents() {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+
+        const data = await response.json();
+        const list = document.getElementById("content-list");
+
+        for (const item of data) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${item.type}:</strong> ${item.name}`;
+          list.appendChild(li);
+
+          if (item.type === "file") {
+            const fileResponse = await fetch(item.download_url);
+            const fileContent = await fileResponse.text();
+
+            const pre = document.createElement("pre");
+            pre.textContent = fileContent;
+            li.appendChild(pre);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching contents:", error);
+      }
+    }
+
+    fetchRepoContents();
+  </script>
+</body>
+</html>
