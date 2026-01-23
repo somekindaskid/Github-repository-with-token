@@ -5,6 +5,10 @@ A simple **HTML + CSS + JavaScript** webpage that uses the **GitHub REST API** t
 It lists all files and folders in the repo, and if the item is a file, it downloads and displays the file content on the page.  
 It also includes a **space-themed animated star background**.
 
+## 📦UPDATES TO ADD
+  - ⬆️ Upload to github pages
+  - ⚙️ Allow for custom tokens from the site with the file path
+  - 🎨 Better CSS design for more simplicity!
 ---
 
 ## ✅ Features
