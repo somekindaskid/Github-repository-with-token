@@ -1,124 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Starry GitHub File Viewer</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      color: #fff;
-      min-height: 100vh;
-      overflow-x: hidden;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<title>Somekinds API abuser</title>
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+<style>
+/* ======== GLOBAL ======== */
+body {
+  margin: 0;
+  padding: 20px;
+  background: #000;
+  color: #33ff33;
+  font-family: "Courier New", monospace;
+}
 
-    ul {
-      list-style: none;
-      padding: 0;
-      max-width: 900px;
-      margin: auto;
-    }
+/* subtle CRT scanlines */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
 
-    li {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+h1 {
+  text-align: center;
+  margin-bottom: 15px;
+}
 
-    strong {
-      color: #00bfff;
-    }
+/* ======== CONTROLS ======== */
+#controls {
+  border: 1px solid #33ff33;
+  padding: 10px;
+  margin-bottom: 10px;
+}
 
-    pre {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-    }
+label {
+  display: inline-block;
+  margin-right: 5px;
+}
 
-    /* Star animations */
-    .stars, .stars2, .stars3 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: -1;
-      background: transparent url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/img/stars.png') repeat top center;
-      animation: moveStars 200s linear infinite;
-    }
+input {
+  background: #000;
+  color: #33ff33;
+  border: 1px solid #33ff33;
+  font-family: inherit;
+  padding: 3px;
+  margin-right: 10px;
+}
 
-    .stars2 {
-      background: transparent url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/img/stars2.png') repeat top center;
-      animation: moveStars 300s linear infinite;
-    }
+button {
+  background: #000;
+  color: #33ff33;
+  border: 1px solid #33ff33;
+  font-family: inherit;
+  padding: 4px 10px;
+  cursor: pointer;
+}
 
-    .stars3 {
-      background: transparent url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/img/stars3.png') repeat top center;
-      animation: moveStars 400s linear infinite;
-    }
+button:hover {
+  background: #33ff33;
+  color: #000;
+}
 
-    @keyframes moveStars {
-      from { background-position: 0 0; }
-      to { background-position: 10000px 5000px; }
-    }
-  </style>
+/* ======== LAYOUT ======== */
+#container {
+  display: flex;
+  height: 70vh;
+  border: 1px solid #33ff33;
+}
+
+/* ======== FILE TREE ======== */
+#files {
+  width: 30%;
+  border-right: 1px solid #33ff33;
+  padding: 5px;
+  overflow-y: auto;
+}
+
+.file, .dir {
+  cursor: pointer;
+  padding-left: 5px;
+}
+
+.dir::before {
+  content: "[+] ";
+}
+
+.file::before {
+  content: "    ";
+}
+
+.dir:hover, .file:hover {
+  background: rgba(51,255,51,0.15);
+}
+
+/* ======== VIEWER ======== */
+#viewer {
+  width: 70%;
+  padding: 10px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #33ff33;
+}
+</style>
 </head>
+
 <body>
-  <div class="stars"></div>
-  <div class="stars2"></div>
-  <div class="stars3"></div>
 
-  <h1>🌌 Quirifys skid ass cheats</h1>
-  <ul id="content-list"></ul>
+<h1>RETRO GITHUB FILE EXPLORER</h1>
 
-  <script>
-    const url = "https://api.github.com/repos/Quirify1/rftvzbghij/contents/";
-    const token = "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";
+<div id="controls">
+  <label>Owner:</label>
+  <input id="owner" placeholder="Quirify1">
 
-    async function fetchRepoContents() {
-      try {
-        const response = await fetch(url, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Accept": "application/vnd.github.v3+json"
-          }
-        });
+  <label>Repo:</label>
+  <input id="repo" placeholder="rftvzbghij">
 
-        const data = await response.json();
-        const list = document.getElementById("content-list");
+  <label>Token (optional):</label>
+  <input id="token" type="password" placeholder="github_pat_...">
 
-        for (const item of data) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${item.type}:</strong> ${item.name}`;
-          list.appendChild(li);
+  <button onclick="loadRepo()">LOAD</button>
+</div>
 
-          if (item.type === "file") {
-            const fileResponse = await fetch(item.download_url);
-            const fileContent = await fileResponse.text();
+<div id="container">
+  <div id="files"></div>
+  <div id="viewer">// select a file</div>
+</div>
 
-            const pre = document.createElement("pre");
-            pre.textContent = fileContent;
-            li.appendChild(pre);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching contents:", error);
-      }
+<script>
+let currentOwner = "";
+let currentRepo = "";
+let authHeaders = {};
+
+async function loadRepo(path = "") {
+  const filesDiv = document.getElementById("files");
+
+  if (path === "") {
+    filesDiv.innerHTML = "";
+    currentOwner = document.getElementById("owner").value.trim();
+    currentRepo = document.getElementById("repo").value.trim();
+    const token = document.getElementById("token").value.trim();
+
+    authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  const url = `https://api.github.com/repos/${currentOwner}/${currentRepo}/contents/${path}`;
+  const res = await fetch(url, { headers: authHeaders });
+  const data = await res.json();
+
+  for (const item of data) {
+    const div = document.createElement("div");
+    div.textContent = item.name;
+    div.className = item.type === "dir" ? "dir" : "file";
+
+    if (item.type === "dir") {
+      div.onclick = () => loadRepo(item.path);
+    } else {
+      div.onclick = async () => {
+        document.getElementById("viewer").textContent = "loading...";
+        const file = await fetch(item.download_url);
+        document.getElementById("viewer").textContent =
+          await file.text();
+      };
     }
 
-    fetchRepoContents();
-  </script>
+    filesDiv.appendChild(div);
+  }
+}
+</script>
+
 </body>
 </html>
